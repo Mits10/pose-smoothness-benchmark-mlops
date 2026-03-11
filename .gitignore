@@ -7,6 +7,12 @@ ENV/
 # Python cache
 __pycache__/
 *.pyc
+#python packaging
+build/
+dist/
+.eggs/
+*.egg-info/
+pip-wheel-metadata/
 
 # macOS
 .DS_Store
@@ -20,3 +26,15 @@ data/raw/
 data/interim/
 data/processed/
 data/external/
+
+#temporary files
+*.tmp
+*.temp
+*.bak
+
+#jupyter notebook
+.ipynb_checkpoints/
+
+#logs
+*.log
+logs/
