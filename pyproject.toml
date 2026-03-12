@@ -1,0 +1,7 @@
+[project]
+name = "pose-smoothness-benchmark-mlops"
+version = "0.1.0"
+description = "Pose smoothness benchmark"
+
+[tool.setuptools.packages.find]
+where = ["src"]
