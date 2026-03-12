@@ -22,10 +22,14 @@ pip-wheel-metadata/
 .vscode/
 
 # data folders
-data/raw/
-data/interim/
-data/processed/
-data/external/
+data/raw/*
+data/interim/*
+data/processed/*
+data/external/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/interim/.gitkeep
+!data/external/.gitkeep
 
 #temporary files
 *.tmp
