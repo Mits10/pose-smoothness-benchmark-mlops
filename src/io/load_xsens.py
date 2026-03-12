@@ -49,7 +49,13 @@ def parse_mvnx_file(input_file:Path) -> pd.DataFrame:
 
     #looping through frame to store segments values
     for frame in root.findall(".//m:frame", ns):
+        # If index has empty values
+        index_value = frame.attrib.get("index")
+        if not index_value:
+            continue  # skip this frame
+
         row: dict[str, float] = {}
+        row["frame_idx"] = int(frame.attrib.get("index",0))
         row["time_s"] = float(frame.attrib.get("time", 0.0))
 
         for child in frame:
