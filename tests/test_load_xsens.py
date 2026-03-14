@@ -1,6 +1,6 @@
 import pytest
 from pathlib import Path
-from src.io.load_xsens import parse_mvnx_file
+from src.io.load_xsens import parse_mvnx_file, _infer_fps
 
 def test_process_directory():
     sample = Path("tests/sample_data/sample.mvnx")
@@ -16,3 +16,6 @@ def test_missing_file_raises_error():
 
     with pytest.raises(FileNotFoundError):
         parse_mvnx_file(bad_path)
+
+def test_infer_fps_seconds():
+    time_s = Path("tests/sample_data/sample_xsens.csv")
