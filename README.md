@@ -32,22 +32,6 @@ This repository demonstrates how to build a **clean ML pipeline for multimodal m
 
 ---
 
-## Core workflow
-
-```text
-Vicon / Xsens / GoPro pose data
-  -> ingestion
-  -> synchronization
-  -> resampling
-  -> coordinate normalization
-  -> filtering
-  -> feature extraction
-  -> model training
-  -> evaluation
-  -> API inference
-
----
-
 # Pipeline Architecture
 
 Raw Motion Data
