@@ -32,8 +32,25 @@ This repository demonstrates how to build a **clean ML pipeline for multimodal m
 
 ---
 
-# Pipeline Architecture
+## Core workflow
 
+```text
+Vicon / Xsens / GoPro pose data
+  -> ingestion
+  -> synchronization
+  -> resampling
+  -> coordinate normalization
+  -> filtering
+  -> feature extraction
+  -> model training
+  -> evaluation
+  -> API inference
+  ```
+
+---
+
+# Pipeline Architecture
+```text
 Raw Motion Data
    │
    ├── Xsens (.mvnx XML)
@@ -63,7 +80,7 @@ Source Comparison Pipeline (src/pipelines/compare_sources.py)
    │
    ▼
 Benchmark Dataset (data/processed/source_comparison.csv)
-
+```
 ---
 
 # Motion Features
@@ -103,7 +120,7 @@ When comparing against Vicon:
 ---
 
 # Repository Structure
-
+```text
 src/
 ├── api/
 ├── features/
@@ -127,7 +144,7 @@ data/
 └── processed/
 
 tests/
-
+```
 ---
 
 # Example Workflow
