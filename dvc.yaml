@@ -1,0 +1,42 @@
+stages:
+  prepare:
+    cmd: python -m src.pipelines.prepare_dataset
+    deps:
+      - src/pipelines/prepare_dataset.py
+      - src/io/load_vicon.py
+      - src/io/load_xsens.py
+      - src/io/load_gopro_pose.py
+    outs:
+      - data/interim
+
+  features:
+    cmd: python -m src.pipelines.build_features
+    deps:
+      - src/pipelines/build_features.py
+      - src/features/feature_builder.py
+      - src/features/smoothness.py
+    params:
+      - features
+    outs:
+      - data/processed/features.parquet
+
+  train:
+    cmd: python -m src.pipelines.train_model
+    deps:
+      - data/processed/features.parquet
+      - src/pipelines/train_model.py
+      - src/models/train.py
+    params:
+      - train
+    outs:
+      - models/model.pkl
+    metrics:
+      - reports/metrics/train_metrics.json
+
+  report:
+    cmd: python -m src.pipelines.generate_report
+    deps:
+      - reports/metrics/train_metrics.json
+      - src/pipelines/generate_report.py
+    outs:
+      - reports/figures
