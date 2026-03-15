@@ -121,29 +121,91 @@ When comparing against Vicon:
 
 # Repository Structure
 ```text
-src/
-├── api/
-├── features/
-├── io/
-│   ├── load_xsens.py
-│   ├── load_vicon.py
-│   └── load_gopro_pose.py
-├── preprocessing/
-│   ├── filters.py
-│   ├── resample.py
-│   └── sync.py
-├── pipelines/
-│   ├── build_features.py
-│   └── compare_sources.py
-├── utils/
+pose-smoothness-benchmark-mlops/
+├── README.md
+├── pyproject.toml
+├── requirements.txt
+├── .gitignore
+├── .pre-commit-config.yaml
+├── docker-compose.yml
+├── Dockerfile
+├── dvc.yaml
+├── dvc.lock
+├── params.yaml
+├── mkdocs.yml
+├── .github/
+│   └── workflows/
+│       ├── ci.yml
+│       ├── train.yml
+│       └── docker.yml
+├── configs/
+│   ├── data.yaml
+│   ├── features.yaml
+│   ├── train.yaml
+│   └── api.yaml
+├── data/
+│   ├── raw/.gitkeep
+│   ├── interim/.gitkeep
+│   ├── processed/.gitkeep
+│   └── external/.gitkeep
+├── docs/
+│   ├── index.md
+│   ├── architecture.md
+│   ├── data-contract.md
+│   ├── experiments.md
+│   ├── api.md
+│   └── results.md
+├── notebooks/
+│   ├── 01_eda.ipynb
+│   ├── 02_signal_alignment.ipynb
+│   └── 03_model_debug.ipynb
+├── src/
+│   ├── __init__.py
+│   ├── io/
+│   │   ├── load_vicon.py
+│   │   ├── load_xsens.py
+│   │   ├── load_gopro_pose.py
+│   │   └── schemas.py
+│   ├── preprocessing/
+│   │   ├── sync.py
+│   │   ├── resample.py
+│   │   ├── normalize.py
+│   │   ├── filters.py
+│   │   └── qc.py
+│   ├── features/
+│   │   ├── smoothness.py
+│   │   ├── kinematics.py
+│   │   ├── segmentation.py
+│   │   └── feature_builder.py
+│   ├── models/
+│   │   ├── train.py
+│   │   ├── evaluate.py
+│   │   ├── registry.py
+│   │   └── inference.py
+│   ├── pipelines/
+│   │   ├── prepare_dataset.py
+│   │   ├── build_features.py
+│   │   ├── train_model.py
+│   │   ├── batch_score.py
+│   │   └── generate_report.py
+│   ├── api/
+│   │   ├── main.py
+│   │   ├── models.py
+│   │   └── service.py
+│   └── utils/
+│       ├── logger.py
+│       └── paths.py
+├── tests/
+│   ├── test_sync.py
+│   ├── test_resample.py
+│   ├── test_smoothness.py
+│   ├── test_feature_builder.py
+│   └── test_api.py
+├── reports/
+│   ├── figures/.gitkeep
+│   └── metrics/.gitkeep
 └── models/
-
-data/
-├── raw/
-├── interim/
-└── processed/
-
-tests/
+    └── .gitkeep
 ```
 ---
 

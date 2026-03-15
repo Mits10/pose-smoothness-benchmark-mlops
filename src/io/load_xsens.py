@@ -37,10 +37,14 @@ def load_xsens_pose_sequence(
     df = pd.read_csv(input_file)
 
     required_cols = ["time_s", *left_hand_cols, *right_hand_cols]
+
+    #If any required columns missing in dataframe
     missing = [col for col in required_cols if col not in df.columns]
     if missing:
         raise ValueError(f"Missing required hand columns in MVNX data: {missing}")
-
+    
+    #Dataframe -> NumpyArray -> python List 
+    # Saving the python list in joints dictionary
     joints = {
         "left_hand": df[list(left_hand_cols)].astype(float).values.tolist(),
         "right_hand": df[list(right_hand_cols)].astype(float).values.tolist(),

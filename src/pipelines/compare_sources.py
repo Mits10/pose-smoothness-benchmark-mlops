@@ -22,20 +22,29 @@ def main() -> None:
     #Path of different source csv files
     xsens_csv_path = Path("data/processed/59_2210_cut_handacceleration_wide.csv")
 
-    #target sources
-    targets: list[PoseSequence] = []
-    targets.append(
-        load_xsens_pose_sequence(
-            xsens_csv_path,
-            sequence_id="xsens_csv_trial",
-            subject_id="59",
-            task="hand_motion",
-            trial=2210,
-            kind="position", 
+    #Check if file exist
+    if xsens_csv_path.exists():
+
+        #target sources
+        targets: list[PoseSequence] = []
+        targets.append(
+            load_xsens_pose_sequence(
+                xsens_csv_path,
+                sequence_id="xsens_csv_trial",
+                subject_id="59",
+                task="hand_motion",
+                trial=2210,
+                kind="position", 
+            )
         )
-    )
-    df = pd.DataFrame([u.model_dump() for u in targets])
-    print(df.to_string())
+    else:
+        raise ValueError
+    #df = pd.DataFrame([u.model_dump() for u in targets])
+    #print(df.to_string())
+
+    for target in targets:
+        x = 5
+
 
 
 
