@@ -1,0 +1,17 @@
+features:
+  joints:
+    - left_hand
+    - right_hand
+  filter_cutoff_hz: 6.0
+  resample_hz: 60.0
+  include_sparc: true
+  include_jerk: true
+  include_acceleration_magnitude: true
+
+train:
+  target: reliability_score
+  model_type: random_forest
+  test_size: 0.2
+  random_state: 42
+  n_estimators: 300
+  max_depth: 10

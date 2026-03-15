@@ -268,6 +268,21 @@ Engineering:
 
 ---
 
+# Fast API Response Example
+```text
+{
+  "sequence_id": "sub01_walk_001",
+  "predicted_reliability": 0.92,
+  "predicted_class": "reliable",
+  "smoothness": {
+    "jerk_mean": 0.19,
+    "sparc": -1.72,
+    "bone_length_var": 0.004
+  },
+  "alerts": []
+}
+```
+
 # Author
 
 Machine Learning / Motion Analysis project focused on building **reproducible pipelines for multimodal time-series data**.
