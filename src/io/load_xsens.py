@@ -28,6 +28,7 @@ def load_xsens_pose_sequence(
     subject_id: str = "unknown_subject",
     task: str = "hand_motion",
     trial: int = 1,
+    kind: str = "position",
     left_hand_cols: tuple[str, str, str] = ("LeftHand_X", "LeftHand_Y", "LeftHand_Z"),
     right_hand_cols: tuple[str, str, str] = ("RightHand_X", "RightHand_Y", "RightHand_Z"),
 
