@@ -38,15 +38,12 @@ def main() -> None:
             )
         )
     else:
-        raise ValueError
+        raise FileNotFoundError(f"{xsens_csv_path} does not exist")
     #df = pd.DataFrame([u.model_dump() for u in targets])
     #print(df.to_string())
 
     for target in targets:
-        x = 5
-
-
-
+        print(target.joints["left_hand"][0])
 
 
 if __name__ == "__main__":
