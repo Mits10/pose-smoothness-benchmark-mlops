@@ -1,14 +1,40 @@
 from __future__ import annotations
 from pathlib import Path
+from dataclasses import dataclass
 import argparse
 
 import numpy as np
 import pandas as pd
 
-
 from src.io.load_xsens import load_xsens_pose_sequence
+from src.io.load_gopro_pose import load_gopro_hand_sequence
+from src.io.load_vicon import load_vicon_hand_sequence
 from src.io.schemas import PoseSequence
+
 from src.preprocessing.filters import lowpass_filter
+from src.preprocessing.resample import resample_timeseries
+from src.preprocessing.sync import apply_lag, estimate_lag
+
+TARGET_FPS = 60.0
+FILTER_CUTOFF_HZ = 6.0
+REFERENCE_HAND = "right_hand"
+
+@dataclass
+class ComparisonResult:
+    sequence_id: str
+    source: str
+    reference_source: str
+    hand: str
+    fps_original: float
+    fps_resampled: float
+    estimated_lag_frames: int
+    n_frames: int
+    mean_abs_error_to_reference: float
+    rmse_to_reference: float
+    correlation_to_reference: float
+    mean_offset_norm: float
+    rms_jerk: float
+    normalized_jerk: float
 
 def main() -> None:
     #Command Line Argument
