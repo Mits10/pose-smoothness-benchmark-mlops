@@ -47,12 +47,35 @@ def main() -> None:
     for target in targets:
         signal = np.asarray(target.joints["left_hand"][:20])
         filtered_signal = lowpass_filter(signal, target_fps, target_cutoff)
-        print(signal)
-        print("signal shape %d", signal.shape)
-        print(filtered_signal)
 
-    
+    # #Syncronization
+    # #By velocity magnitude
+    # vicon_sig = np.linalg.norm(vicon_vel_hand, axis=1)
+    # xsens_sig = np.linalg.norm(xsens_vel_hand, axis=1)
 
+    # n = min(len(vicon_sig), len(xsens_sig), 300)   # first 300 frames, example
+    # lag = estimate_lag(vicon_sig[:n], xsens_sig[:n])
+
+    # xsens_pos_aligned = apply_lag(xsens_pos_hand, lag)
+    # xsens_vel_aligned = apply_lag(xsens_vel_hand, lag)
+    # xsens_acc_aligned = apply_lag(xsens_acc_hand, lag)
+
+
+    # #Syncronization
+    # #By max value in the z direction: event: raise of hand
+    # vicon_sig = np.linalg.norm(vicon_vel_hand, axis=1)
+    # xsens_sig = np.linalg.norm(xsens_vel_hand, axis=1)
+
+    # n = min(len(vicon_sig), len(xsens_sig), 300)
+
+    # vicon_peak = np.argmax(vicon_sig[:n])
+    # xsens_peak = np.argmax(xsens_sig[:n])
+
+    # lag = vicon_peak - xsens_peak
+
+    # xsens_pos_aligned = apply_lag(xsens_pos_hand, lag)
+    # xsens_vel_aligned = apply_lag(xsens_vel_hand, lag)
+    # xsens_acc_aligned = apply_lag(xsens_acc_hand, lag)
 
 if __name__ == "__main__":
     main()

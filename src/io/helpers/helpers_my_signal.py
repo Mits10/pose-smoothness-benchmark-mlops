@@ -12,5 +12,5 @@ def get_signal(path: Path) -> np.array:
                 task="hand_motion",
                 trial=2210,
                 kind="position",
-    ).joints["left_hand"][:25]
+    ).joints["left_hand"]
     return data
