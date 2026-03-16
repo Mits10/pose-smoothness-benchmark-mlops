@@ -5,8 +5,10 @@ import argparse
 import numpy as np
 import pandas as pd
 
+
 from src.io.load_xsens import load_xsens_pose_sequence
 from src.io.schemas import PoseSequence
+from src.preprocessing.filters import lowpass_filter
 
 def main() -> None:
     #Command Line Argument
@@ -16,8 +18,8 @@ def main() -> None:
 
     #Reading Argument
     args = parser.parse_args()
-    target_fps = args.fps
-    filter_cutoff_hz = args.frq
+    target_fps = int(args.fps)
+    target_cutoff = int(args.frq)
 
     #Path of different source csv files
     xsens_csv_path = Path("data/processed/59_2210_cut_handacceleration_wide.csv")
@@ -43,7 +45,13 @@ def main() -> None:
     #print(df.to_string())
 
     for target in targets:
-        print(target.joints["left_hand"][0])
+        signal = np.asarray(target.joints["left_hand"][:20])
+        filtered_signal = lowpass_filter(signal, target_fps, target_cutoff)
+        print(signal)
+        print("signal shape %d", signal.shape)
+        print(filtered_signal)
+
+    
 
 
 if __name__ == "__main__":

@@ -16,4 +16,11 @@ def lowpass_filter(signal: np.ndarray, fps: float, cutoff: float, order: int = 4
     nyquist = fps / 2.0
     b, a = butter(order, cutoff / nyquist, btype="low")
 
+    padlen = 3 * (max(len(a), len(b)) - 1)
+    if arr.shape[0] <= padlen:
+        raise ValueError(
+            f"Signal too short for filtfilt: need more than {padlen} samples, got {arr.shape[0]}."
+        )
+
     return filtfilt(b, a, arr, axis=0)
+
