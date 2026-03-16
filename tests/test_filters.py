@@ -16,6 +16,4 @@ def test_lowpass_filter():
         trial=2210,
         kind="position", 
     ).joints["left_hand"][:5]
-
-    print(sample_data)
     assert len(sample_data) > 0
