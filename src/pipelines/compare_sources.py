@@ -102,6 +102,7 @@ def main() -> None:
     # xsens_pos_aligned = apply_lag(xsens_pos_hand, lag)
     # xsens_vel_aligned = apply_lag(xsens_vel_hand, lag)
     # xsens_acc_aligned = apply_lag(xsens_acc_hand, lag)
+    #
 
 if __name__ == "__main__":
     main()
