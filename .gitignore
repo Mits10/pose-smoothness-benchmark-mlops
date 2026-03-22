@@ -2,7 +2,10 @@
 .venv/
 venv/
 env/
+env37/
 ENV/
+.env.local
+.env.*.local
 
 # Python cache
 __pycache__/
