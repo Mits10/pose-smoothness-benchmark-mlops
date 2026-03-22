@@ -4,23 +4,23 @@ import numpy as np
 from scipy.signal import correlate
 
 
-def estimate_lag(reference: np.ndarray, target: np.ndarray) -> int:
-    """Estimate lag in frames between two 1D signals.
+#def estimate_lag(reference: np.ndarray, target: np.ndarray) -> int:
+#     """Estimate lag in frames between two 1D signals.
 
-    Positive lag means the target should be shifted right to align with the reference.
-    """
-    ref = np.asarray(reference, dtype=float).reshape(-1)
-    tar = np.asarray(target, dtype=float).reshape(-1)
+#     Positive lag means the target should be shifted right to align with the reference.
+#     """
+#     ref = np.asarray(reference, dtype=float).reshape(-1)
+#     tar = np.asarray(target, dtype=float).reshape(-1)
 
-    if ref.size < 3 or tar.size < 3:
-        raise ValueError("Signals must each contain at least 3 samples.")
+#     if ref.size < 3 or tar.size < 3:
+#         raise ValueError("Signals must each contain at least 3 samples.")
 
-    ref = ref - np.mean(ref)
-    tar = tar - np.mean(tar)
+#     ref = ref - np.mean(ref)
+#     tar = tar - np.mean(tar)
 
-    corr = correlate(ref, tar, mode="full")
-    lags = np.arange(-tar.size + 1, ref.size)
-    return int(lags[np.argmax(corr)])
+#     corr = correlate(ref, tar, mode="full")
+#     lags = np.arange(-tar.size + 1, ref.size)
+#     return int(lags[np.argmax(corr)])
 
 def apply_lag(signal: np.ndarray, lag: int) -> np.ndarray:
     """Shift a signal by lag frames, padding with edge values."""
