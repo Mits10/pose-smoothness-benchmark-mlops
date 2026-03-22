@@ -2,57 +2,76 @@ import pyrealsense2 as rs
 import numpy as np
 import cv2
 from pathlib import Path
+import os
+import csv
+#     data_folder = Path(r"C:\Users\awila\OneDrive\Desktop\Mitaly\Openpose\RealSense\input_data\104_1003.bag")
+#     output_dir = Path(r"C:\Users\awila\OneDrive\Desktop\Mitaly\Openpose\RealSense")
+
+# --- Paths ---
+bag_file = r"C:\Users\awila\OneDrive\Desktop\Mitaly\Openpose\RealSense\input_data\104_1003.bag"      # full path to your .bag
+save_dir = r"C:\Users\awila\OneDrive\Desktop\Mitaly\Openpose\RealSense"            # directory to save frames
+csv_file = os.path.join(save_dir, "timestamps.csv")  # CSV for frame timestamps
+
+# Make sure save directory exists
+os.makedirs(save_dir, exist_ok=True)
+
+# --- RealSense setup ---
+pipeline = rs.pipeline()
+config = rs.config()
+config.enable_device_from_file(bag_file, repeat_playback=False)
+
+# Start pipeline
+profile = pipeline.start(config)
+
+# Optional: slow down playback so frames match recorded FPS
+playback = profile.get_device().as_playback()
+playback.set_real_time(False)
 
 def main() -> None:
-# ----------------------------
-# USER SETTINGS
-# ----------------------------
-    data_folder = Path(r"C:\Users\awila\OneDrive\Desktop\Mitaly\Openpose\RealSense\input_data")
-    output_dir = Path(r"C:\Users\awila\OneDrive\Desktop\Mitaly\Openpose\RealSense\Output_data_json")
-    BAG_FILE = data_folder/"104_1003.bag"   # Path to your .bag file inside Docker
-    VIDEO_FILE = output_dir/"subject_4.mp4"  # Output video
-    print(str(BAG_FILE))  # Verify it prints the correct full path
-    print(BAG_FILE.exists())  # Should print True
-    WIDTH, HEIGHT = 640, 480
-    FPS = 30
+    print("Saving frames and timestamps...")
 
-    # ----------------------------
-    # Initialize RealSense pipeline
-    # ----------------------------
-    pipeline = rs.pipeline()
-    config = rs.config()
-    config.enable_device_from_file(str(BAG_FILE), repeat_playback=True)
-    config.enable_stream(rs.stream.color, WIDTH, HEIGHT, rs.format.bgr8, FPS)
-
-    pipeline.start(config)
-
-    # ----------------------------
-    # Create OpenCV VideoWriter
-    # ----------------------------
-    out = cv2.VideoWriter(str(VIDEO_FILE),
-                        cv2.VideoWriter_fourcc(*'mp4v'),
-                        FPS,
-                        (WIDTH, HEIGHT))
-
-    print(f"[INFO] Extracting frames from {BAG_FILE} ...")
+    frame_count = 0
+    timestamps = []
 
     try:
         while True:
-            frames = pipeline.wait_for_frames()
+            try:
+                # Wait up to 5 seconds for next frame
+                frames = pipeline.wait_for_frames(timeout_ms=5000)
+            except RuntimeError:
+                # End of bag reached
+                break
+
             color_frame = frames.get_color_frame()
             if not color_frame:
                 continue
 
-            frame = np.asanyarray(color_frame.get_data())
-            out.write(frame)
+            # Convert frame to numpy array (BGR)
+            image = np.asanyarray(color_frame.get_data())
 
-    except RuntimeError:
-        # End of bag file
-        pass
+            # Save image
+            filename = os.path.join(save_dir, f"frame_{frame_count:05d}.png")
+            cv2.imwrite(filename, image)
 
-    pipeline.stop()
-    out.release()
-    print(f"[INFO] Video saved: {VIDEO_FILE}")
+            # Save timestamp in milliseconds
+            frame_time = color_frame.get_timestamp()
+            timestamps.append(frame_time)
+
+            frame_count += 1
+            if frame_count % 50 == 0:
+                print(f"Saved {frame_count} frames")
+
+    finally:
+        pipeline.stop()
+        print(f"Finished! Total frames saved: {frame_count}")
+
+        # Write timestamps to CSV
+        with open(csv_file, mode='w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(["frame_index", "timestamp_ms"])
+            for idx, ts in enumerate(timestamps):
+                writer.writerow([idx, ts])
+        print(f"Timestamps saved to: {csv_file}")
 
 if __name__ == "__main__":
     main()
