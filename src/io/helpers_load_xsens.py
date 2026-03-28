@@ -64,7 +64,7 @@ def parse_mvnx_file(input_file:Path) -> pd.DataFrame:
             if child.text is None or not child.text.strip():
                 continue
             values = list(map(float, child.text.split()))
-
+            
             if tag == "position": row.update(split_xyz(values, segments, "")) 
             elif tag == "velocity": row.update(split_xyz(values, segments, "V")) 
             elif tag == "acceleration": row.update(split_xyz(values, segments, "A")) 

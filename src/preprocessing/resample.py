@@ -23,7 +23,7 @@ def resample_timeseries(signal: np.ndarray, orig_fps: float, target_fps: float) 
     new_t = np.linspace(0.0, duration, new_total_frame)
 
     interpolator = interp1d(orig_t, arr, axis=0, kind="linear", fill_value="extrapolate")
-    return interpolator(new_t)
+    return interpolator(new_t), orig_t, new_t 
 
     # If I want to replace interpld function
     # out = np.empty((new_n, arr.shape[1]), dtype=float)

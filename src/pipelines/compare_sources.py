@@ -19,6 +19,8 @@ from src.features.smoothness import build_smoothness_features
 TARGET_FPS = 60.0
 FILTER_CUTOFF_HZ = 6.0
 REFERENCE_HAND = "right_hand"
+orig_tstmp_Xsens = []
+resamp_tstmp_Xsens = []
 
 @dataclass
 class ComparisonResult:
@@ -46,11 +48,19 @@ def _to_array(coords: list[list[float]]) -> np.ndarray:
 def _center_signal(arr: np.ndarray) -> np.ndarray:
     return arr - np.mean(arr, axis = 0, keepdims = True)
 
+#Prepare Hand signal Does -
+#-to_array : Convert the hand keypoint into array
+#resample_timeseries : Resample the fps to target fps
+#lowpass_filter : Work with signal jitter
+
 def _prepare_hand_signal(seq: PoseSequence, hand: str) -> np.ndarray:
     if hand not in seq.joints:
         raise ValueError("Missing hand '{hand} in sequence {seq.sequence_id}")
     arr = _to_array(seq.joints[hand])
-    arr = resample_timeseries(arr, fps = TARGET_FPS, cuttoff = FILTER_CUTOFF_HZ)
+    arr , orig_tstmp_Xsens, resamp_tstmp_Xsens= resample_timeseries(arr, orig_fps = 40, target_fps = TARGET_FPS)
+    #arr = lowpass_filter(arr, fps = TARGET_FPS, cutoff = FILTER_CUTOFF_HZ)
+    print(resamp_tstmp_Xsens)
+    print(orig_tstmp_Xsens)
     return arr
 
 def _match_dimensions(reference: np.ndarray, target: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
@@ -70,7 +80,8 @@ def _align_to_reference(reference: np.ndarray, target: np.ndarray) -> tuple[np.n
     return reference[:n], target_aligned[:n], lag
 
 def _compute_pair_metrics(reference: np.ndarray, target: np.ndarray) -> tuple[float, float, float, float]:
-    diff = target-reference = float(np.mean(np.abs(diff)))
+    diff = target-reference 
+    diff = float(np.mean(np.abs(diff)))
     mae = float(np.mean(np.abs(diff)))
     rmse = float(np.sqrt(np.mean(np.square(diff))))
     mean_offset_norm = float(np.mean(np.linlag.norm(diff, axis = 1)))
@@ -137,12 +148,12 @@ def main() -> None:
     #Command Line Argument
     parser = argparse.ArgumentParser(description = "Compare different sources pose smoothness.")
     parser.add_argument("--fps", required = True, help = "Inter taget FPS.")
-    parser.add_argument("--frq", required = True, help = "Enter cutoff frequency.")
+    parser.add_argument("--cutoff", required = True, help = "Enter cutoff frequency.")
 
     #Reading Argument
     args = parser.parse_args()
     target_fps = int(args.fps)
-    target_cutoff = int(args.frq)
+    target_cutoff = int(args.cutoff)
 
     #Path of different source csv files
     xsens_csv_path = Path("data/processed/59_2210_cut_handacceleration_wide.csv")
@@ -156,9 +167,9 @@ def main() -> None:
             load_xsens_pose_sequence(
                 xsens_csv_path,
                 sequence_id = "xsens_csv_trial",
-                subject_id = "59",
+                subject_id = "test",
                 task = "hand_motion",
-                trial = 2210,
+                trial = 1,
                 kind = "position", 
             )
         )
@@ -168,38 +179,16 @@ def main() -> None:
     #print(df.to_string())
 
     for target in targets:
-        signal = np.asarray(target.joints["left_hand"][:20])
-        filtered_signal = lowpass_filter(signal, target_fps, target_cutoff)
+        #signal = np.asarray(target.joints["left_hand"][:20])
+        #filtered_signal = lowpass_filter(signal, target_fps, target_cutoff)
+        #ref_signal = _prepare_hand_signal(reference_seq, hand)
+        target_signal = _prepare_hand_signal(target, "right_hand")
 
-    # #Syncronization
-    # #By velocity magnitude
-    # vicon_sig = np.linalg.norm(vicon_vel_hand, axis=1)
-    # xsens_sig = np.linalg.norm(xsens_vel_hand, axis=1)
-
-    # n = min(len(vicon_sig), len(xsens_sig), 300)   # first 300 frames, example
-    # lag = estimate_lag(vicon_sig[:n], xsens_sig[:n])
-
-    # xsens_pos_aligned = apply_lag(xsens_pos_hand, lag)
-    # xsens_vel_aligned = apply_lag(xsens_vel_hand, lag)
-    # xsens_acc_aligned = apply_lag(xsens_acc_hand, lag)
+    #view of resamples timeseries
+    print(target_signal[:5])
 
 
-    # #Syncronization
-    # #By max value in the z direction: event: raise of hand
-    # vicon_sig = np.linalg.norm(vicon_vel_hand, axis=1)
-    # xsens_sig = np.linalg.norm(xsens_vel_hand, axis=1)
 
-    # n = min(len(vicon_sig), len(xsens_sig), 300)
-
-    # vicon_peak = np.argmax(vicon_sig[:n])
-    # xsens_peak = np.argmax(xsens_sig[:n])
-
-    # lag = vicon_peak - xsens_peak
-
-    # xsens_pos_aligned = apply_lag(xsens_pos_hand, lag)
-    # xsens_vel_aligned = apply_lag(xsens_vel_hand, lag)
-    # xsens_acc_aligned = apply_lag(xsens_acc_hand, lag)
-    #
 
 if __name__ == "__main__":
     main()

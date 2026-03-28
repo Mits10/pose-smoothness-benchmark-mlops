@@ -22,6 +22,38 @@ from scipy.signal import correlate
 #     lags = np.arange(-tar.size + 1, ref.size)
 #     return int(lags[np.argmax(corr)])
 
+def estimate_lag(reference: np.ndarray, target: np.ndarray) -> int:
+    pass
+
+    # #Syncronization
+    # #By velocity magnitude
+    # vicon_sig = np.linalg.norm(vicon_vel_hand, axis=1)
+    # xsens_sig = np.linalg.norm(xsens_vel_hand, axis=1)
+
+    # n = min(len(vicon_sig), len(xsens_sig), 300)   # first 300 frames, example
+    # lag = estimate_lag(vicon_sig[:n], xsens_sig[:n])
+
+    # xsens_pos_aligned = apply_lag(xsens_pos_hand, lag)
+    # xsens_vel_aligned = apply_lag(xsens_vel_hand, lag)
+    # xsens_acc_aligned = apply_lag(xsens_acc_hand, lag)
+
+
+    # #Syncronization
+    # #By max value in the z direction: event: raise of hand
+    # vicon_sig = np.linalg.norm(vicon_vel_hand, axis=1)
+    # xsens_sig = np.linalg.norm(xsens_vel_hand, axis=1)
+
+    # n = min(len(vicon_sig), len(xsens_sig), 300)
+
+    # vicon_peak = np.argmax(vicon_sig[:n])
+    # xsens_peak = np.argmax(xsens_sig[:n])
+
+    # lag = vicon_peak - xsens_peak
+
+    # xsens_pos_aligned = apply_lag(xsens_pos_hand, lag)
+    # xsens_vel_aligned = apply_lag(xsens_vel_hand, lag)
+    # xsens_acc_aligned = apply_lag(xsens_acc_hand, lag)
+    #
 def apply_lag(signal: np.ndarray, lag: int) -> np.ndarray:
     """Shift a signal by lag frames, padding with edge values."""
     arr = np.asarray(signal, dtype=float)
