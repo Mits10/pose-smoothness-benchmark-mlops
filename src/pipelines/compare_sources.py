@@ -2,7 +2,7 @@ from __future__ import annotations
 from pathlib import Path
 from dataclasses import dataclass
 import argparse
-
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
@@ -14,7 +14,7 @@ from src.io.schemas import PoseSequence
 from src.preprocessing.filters import lowpass_filter
 from src.preprocessing.resample import resample_timeseries
 from src.preprocessing.sync import apply_lag, estimate_lag
-from src.features.smoothness import build_smoothness_features
+from src.features.smoothness import build_smoothness_features, velocity, spectral_arc_length, sliding_sparc
 
 TARGET_FPS = 60.0
 FILTER_CUTOFF_HZ = 6.0
@@ -48,24 +48,32 @@ def _to_array(coords: list[list[float]]) -> np.ndarray:
 def _center_signal(arr: np.ndarray) -> np.ndarray:
     return arr - np.mean(arr, axis = 0, keepdims = True)
 
+"""
 #Prepare Hand signal Does -
 #-to_array : Convert the hand keypoint into array
 #resample_timeseries : Resample the fps to target fps
 #lowpass_filter : Work with signal jitter
+"""
 
 def _prepare_hand_signal(seq: PoseSequence, hand: str) -> np.ndarray:
     if hand not in seq.joints:
         raise ValueError("Missing hand '{hand} in sequence {seq.sequence_id}")
     arr = _to_array(seq.joints[hand])
     arr , orig_tstmp_Xsens, resamp_tstmp_Xsens= resample_timeseries(arr, orig_fps = 40, target_fps = TARGET_FPS)
-    #arr = lowpass_filter(arr, fps = TARGET_FPS, cutoff = FILTER_CUTOFF_HZ)
-    print(resamp_tstmp_Xsens)
-    print(orig_tstmp_Xsens)
+    arr = lowpass_filter(arr, fps = TARGET_FPS, cutoff = FILTER_CUTOFF_HZ)
+    #print(resamp_tstmp_Xsens)
+    #print(orig_tstmp_Xsens)
     return arr
 
 def _match_dimensions(reference: np.ndarray, target: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     dims = min(reference.shape[1], target.shape[1])
     return reference[:, :dims], target[:, :dims]
+
+"""
+This function align the signals to reference signal
+estimate_lag is the function to calculate the difference between the two signal
+apply_lag function adjust the signal with the lag computed by estimate_lag
+"""
 
 def _align_to_reference(reference: np.ndarray, target: np.ndarray) -> tuple[np.ndarray, np.ndarray, int]:
     reference, target = _match_dimensions(reference, target)
@@ -78,6 +86,7 @@ def _align_to_reference(reference: np.ndarray, target: np.ndarray) -> tuple[np.n
 
     n = min(len(reference), len(target_aligned))
     return reference[:n], target_aligned[:n], lag
+
 
 def _compute_pair_metrics(reference: np.ndarray, target: np.ndarray) -> tuple[float, float, float, float]:
     diff = target-reference 
@@ -156,7 +165,9 @@ def main() -> None:
     target_cutoff = int(args.cutoff)
 
     #Path of different source csv files
-    xsens_csv_path = Path("data/processed/59_2210_cut_handacceleration_wide.csv")
+    #Update: Send either path or values
+    #Need to be done
+    xsens_csv_path = Path("data/processed/111_xsens_wide.csv")
 
     #Check if file exist
     if xsens_csv_path.exists():
@@ -182,10 +193,34 @@ def main() -> None:
         #signal = np.asarray(target.joints["left_hand"][:20])
         #filtered_signal = lowpass_filter(signal, target_fps, target_cutoff)
         #ref_signal = _prepare_hand_signal(reference_seq, hand)
-        target_signal = _prepare_hand_signal(target, "right_hand")
+        target_signal = _prepare_hand_signal(target, "left_hand")
 
     #view of resamples timeseries
-    print(target_signal[:5])
+    
+    dt = 1 / TARGET_FPS 
+    target_velocity = velocity(target_signal, dt)
+    target_speed = np.linalg.norm(target_velocity, axis=1)
+    print(target_speed[:5])
+    sparc_value = spectral_arc_length(target_speed, TARGET_FPS)
+    print(sparc_value)
+    indices, sparc_series = sliding_sparc(target_speed, 60, window_size=30, step=1)
+    # Create a DataFrame
+    df = pd.DataFrame({
+        "frame": indices,
+        "sparc": sparc_series
+    })
+    # Save to CSV
+    df.to_csv("sliding_sparc_111.csv", index=False)
+
+    print("Sliding SPARC saved to sliding_sparc.csv")
+    plt.figure()
+    plt.plot(target_speed, label="Speed")
+    plt.plot(indices, sparc_series, label="Sliding SPARC")
+    plt.legend()
+    plt.title("Smoothness over time")
+    # Save plot as PDF
+    plt.savefig("sliding_sparc_plot_111.pdf", format='pdf')
+    plt.show()
 
 
 

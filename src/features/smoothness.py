@@ -71,6 +71,19 @@ def spectral_arc_length(signal_1d: np.ndarray, fs: float) -> float:
     arc = np.sum(np.sqrt(df**2 + dp**2))
     return float(-arc)
 
+def sliding_sparc(speed, fs, window_size=30, step=1):
+    values = []
+    indices = []
+
+    for i in range(0, len(speed) - window_size + 1, step):
+        segment = speed[i:i+window_size]
+        val = spectral_arc_length(segment, fs)
+
+        values.append(val)
+        indices.append(i + window_size // 2)  # center of window
+
+    return np.array(indices), np.array(values)
+
 
 def build_smoothness_features(signal: np.ndarray, fps: float) -> dict[str, float]:
     if fps <= 0:
