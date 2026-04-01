@@ -3,6 +3,24 @@ from __future__ import annotations
 import numpy as np
 from scipy.signal import correlate
 
+def detect_hand_raise(signal: list, thresh: float) -> int:
+    reject = True
+    while reject == True:
+        for i in range(len(signal)):
+            if signal[i] > thresh and signal[i+1] > thresh:
+                start = i
+                break
+        for i in range(start, len(signal)-1):
+            if signal[i] > 0 and signal[i+1] <= 0:
+                peak = i
+                break
+        if (peak - start) < 40:
+            reject = True
+            break
+        reject = False
+    
+    return start, peak
+
 
 #def estimate_lag(reference: np.ndarray, target: np.ndarray) -> int:
 #     """Estimate lag in frames between two 1D signals.

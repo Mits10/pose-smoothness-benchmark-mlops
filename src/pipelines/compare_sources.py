@@ -13,7 +13,7 @@ from src.io.schemas import PoseSequence
 
 from src.preprocessing.filters import lowpass_filter
 from src.preprocessing.resample import resample_timeseries
-from src.preprocessing.sync import apply_lag, estimate_lag
+from src.preprocessing.sync import apply_lag, estimate_lag, detect_hand_raise
 from src.features.smoothness import build_smoothness_features, velocity, spectral_arc_length, sliding_sparc
 
 TARGET_FPS = 60.0
@@ -59,8 +59,8 @@ def _prepare_hand_signal(seq: PoseSequence, hand: str) -> np.ndarray:
     if hand not in seq.joints:
         raise ValueError("Missing hand '{hand} in sequence {seq.sequence_id}")
     arr = _to_array(seq.joints[hand])
-    arr , orig_tstmp_Xsens, resamp_tstmp_Xsens= resample_timeseries(arr, orig_fps = 40, target_fps = TARGET_FPS)
-    arr = lowpass_filter(arr, fps = TARGET_FPS, cutoff = FILTER_CUTOFF_HZ)
+    #arr , orig_tstmp_Xsens, resamp_tstmp_Xsens= resample_timeseries(arr, orig_fps = 40, target_fps = TARGET_FPS)
+    arr = lowpass_filter(arr, fps = 40, cutoff = FILTER_CUTOFF_HZ)
     #print(resamp_tstmp_Xsens)
     #print(orig_tstmp_Xsens)
     return arr
@@ -167,7 +167,7 @@ def main() -> None:
     #Path of different source csv files
     #Update: Send either path or values
     #Need to be done
-    xsens_csv_path = Path("data/processed/111_xsens_wide.csv")
+    xsens_csv_path = Path("data/processed/104_xsens_wide.csv")
 
     #Check if file exist
     if xsens_csv_path.exists():
@@ -193,34 +193,48 @@ def main() -> None:
         #signal = np.asarray(target.joints["left_hand"][:20])
         #filtered_signal = lowpass_filter(signal, target_fps, target_cutoff)
         #ref_signal = _prepare_hand_signal(reference_seq, hand)
-        target_signal = _prepare_hand_signal(target, "left_hand")
+        print(target.joints["right_hand"][0])
+        target_signal = _prepare_hand_signal(target, "right_hand")
 
     #view of resamples timeseries
-    
     dt = 1 / TARGET_FPS 
+    #pos_z = list(map(lambda x: x[-1], target_signal))
+    #print(pos_z[563])
+    #vel_z = velocity(pos_z, dt)
+    # Normalize
+    #vel_norm = vel_z / np.max(np.abs(vel_z))
+    #frame = detect_hand_raise(vel_norm, 0.5)
+    #print(frame)
+    
+    
     target_velocity = velocity(target_signal, dt)
+    
+    #plt.plot(vel, label="Velocity")
+    #plt.legend()
+    #plt.show()
     target_speed = np.linalg.norm(target_velocity, axis=1)
     print(target_speed[:5])
-    sparc_value = spectral_arc_length(target_speed, TARGET_FPS)
+    sparc_value = spectral_arc_length(target_speed[72690:76313], TARGET_FPS)
     print(sparc_value)
-    indices, sparc_series = sliding_sparc(target_speed, 60, window_size=30, step=1)
+    #indices, sparc_series = sliding_sparc(target_speed, 60, window_size=30, step=1)
     # Create a DataFrame
-    df = pd.DataFrame({
-        "frame": indices,
-        "sparc": sparc_series
-    })
+    #df = pd.DataFrame({
+        #"frame": indices,
+        #"sparc": sparc_series
+    #})
     # Save to CSV
-    df.to_csv("sliding_sparc_111.csv", index=False)
+    #df.to_csv("sliding_sparc_111.csv", index=False)
 
-    print("Sliding SPARC saved to sliding_sparc.csv")
-    plt.figure()
-    plt.plot(target_speed, label="Speed")
-    plt.plot(indices, sparc_series, label="Sliding SPARC")
-    plt.legend()
-    plt.title("Smoothness over time")
+    #print("Sliding SPARC saved to sliding_sparc.csv")
+    #plt.figure()
+    #plt.plot(target_speed, label="Speed")
+    #plt.plot(indices, sparc_series, label="Sliding SPARC")
+    #plt.legend()
+    #plt.title("Smoothness over time")
     # Save plot as PDF
-    plt.savefig("sliding_sparc_plot_111.pdf", format='pdf')
-    plt.show()
+    #plt.savefig("sliding_sparc_plot_111.pdf", format='pdf')
+    #plt.show()
+
 
 
 
