@@ -8,8 +8,8 @@ import csv
 #     output_dir = Path(r"C:\Users\awila\OneDrive\Desktop\Mitaly\Openpose\RealSense")
 
 # --- Paths ---
-bag_file = r"C:\Users\awila\OneDrive\Desktop\Mitaly\Openpose\RealSense\input_data\104_1003.bag"      # full path to your .bag
-save_dir = r"C:\Users\awila\OneDrive\Desktop\Mitaly\Openpose\RealSense"            # directory to save frames
+bag_file = r"C:\Users\awila\OneDrive\Desktop\Mitaly\Openpose\RealSense\input_data\111_1203.bag"      # full path to your .bag
+save_dir = r"C:\Users\awila\OneDrive\Desktop\Mitaly\Openpose\RealSense\output_data_json\111_output"            # directory to save frames
 csv_file = os.path.join(save_dir, "timestamps.csv")  # CSV for frame timestamps
 
 # Make sure save directory exists
