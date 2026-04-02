@@ -167,7 +167,7 @@ def main() -> None:
     #Path of different source csv files
     #Update: Send either path or values
     #Need to be done
-    xsens_csv_path = Path("data/processed/104_xsens_wide.csv")
+    xsens_csv_path = Path("data/processed/102_xsens_wide.csv")
 
     #Check if file exist
     if xsens_csv_path.exists():
@@ -213,17 +213,17 @@ def main() -> None:
     #plt.legend()
     #plt.show()
     target_speed = np.linalg.norm(target_velocity, axis=1)
-    print(target_speed[:5])
-    sparc_value = spectral_arc_length(target_speed[72690:76313], TARGET_FPS)
+    #print(target_speed[:5])
+    sparc_value = spectral_arc_length(target_speed[71376:74267], TARGET_FPS)
     print(sparc_value)
-    #indices, sparc_series = sliding_sparc(target_speed, 60, window_size=30, step=1)
+    #indices, sparc_series = sliding_sparc(target_speed, 60, window_size=400, step=1)
     # Create a DataFrame
     #df = pd.DataFrame({
         #"frame": indices,
         #"sparc": sparc_series
     #})
     # Save to CSV
-    #df.to_csv("sliding_sparc_111.csv", index=False)
+    #df.to_csv("sensitivity_sparc_104.csv", index=False)
 
     #print("Sliding SPARC saved to sliding_sparc.csv")
     #plt.figure()
@@ -232,7 +232,7 @@ def main() -> None:
     #plt.legend()
     #plt.title("Smoothness over time")
     # Save plot as PDF
-    #plt.savefig("sliding_sparc_plot_111.pdf", format='pdf')
+    #plt.savefig("sensitivity_sparc_plot_104.pdf", format='pdf')
     #plt.show()
 
 
