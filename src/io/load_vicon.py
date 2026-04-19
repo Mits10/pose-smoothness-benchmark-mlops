@@ -8,8 +8,7 @@ from src.io.schemas import PoseSequence, SequenceMetadata
 
 
 HAND_POSITION_COLUMNS = {
-    "left_hand": ["left_hand_x", "left_hand_y", "left_hand_z"],
-    "right_hand": ["right_hand_x", "right_hand_y", "right_hand_z"],
+    "right_hand": ["right_hand_x", "right_hand_y"],
 }
 
 
@@ -36,6 +35,13 @@ def _infer_fps_from_time(df: pd.DataFrame) -> float:
         "Could not infer fps from Vicon file. Add a time column such as 'time' or 'time_s'."
     )
 
+def _center_of_hand(df: pd.DataFrame) -> pd.DataFrame:
+    df["right_hand_x"] = df[["hand1_x", "hand2_x", "hand3_x"]].mean(axis=1)
+    df["right_hand_y"] = df[["hand1_y", "hand2_y", "hand3_y"]].mean(axis=1)
+    df["right_hand_z"] = df[["hand1_z", "hand2_z", "hand3_z"]].mean(axis=1)
+    df = df[["right_hand_x", "right_hand_y", "right_hand_z"]]
+    return df
+    
 
 def load_vicon_hand_sequence(
     path: str | Path,
@@ -61,6 +67,7 @@ def load_vicon_hand_sequence(
 
     df = pd.read_csv(path)
     df = _normalize_columns(df)
+    df = _center_of_hand(df)
 
     active_map = column_map or HAND_POSITION_COLUMNS
 

@@ -5,11 +5,11 @@ from pathlib import Path
 import pandas as pd
 
 from src.io.schemas import PoseSequence, SequenceMetadata
-
+from src.preprocessing.interpolate import preprocessed_data
 
 GOPRO_2D_COLUMNS = {
-    "left_hand": ["left_hand_x", "left_hand_y"],
-    "right_hand": ["right_hand_x", "right_hand_y"],
+    "left_hand": ["lwrist_x", "lwrist_y"],
+    "right_hand": ["rwrist_x", "rwrist_y"],
 }
 
 GOPRO_3D_COLUMNS = {
@@ -64,6 +64,7 @@ def load_gopro_hand_sequence(
         raise FileNotFoundError(path)
 
     df = pd.read_csv(path)
+    df = preprocessed_data(df)
     df = _normalize_columns(df)
 
     default_map = GOPRO_3D_COLUMNS if use_3d else GOPRO_2D_COLUMNS

@@ -29,8 +29,8 @@ def load_xsens_pose_sequence(
     task: str = "hand_motion",
     trial: int = 1,
     kind: str = "position",
-    left_hand_cols: tuple[str, str, str] = ("LeftHand_X", "LeftHand_Y", "LeftHand_Z"),
-    right_hand_cols: tuple[str, str, str] = ("RightHand_X", "RightHand_Y", "RightHand_Z"),
+    left_hand_cols: tuple[str, str, str] = ("LeftHand_X", "LeftHand_Y"),
+    right_hand_cols: tuple[str, str, str] = ("RightHand_X", "RightHand_Y"),
 
 ) -> PoseSequence:
 
