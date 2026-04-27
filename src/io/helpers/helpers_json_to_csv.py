@@ -43,9 +43,9 @@ def get_frame_number(file_name):
 # Main
 # -----------------------------
 def main() -> None:
-    folder_path = r"C:\Users\awila\OneDrive\Desktop\Mitaly\Openpose\GoPro\Output_json\output_json_gopro_104_1"
-    output_folder = r"C:\Users\awila\OneDrive\Desktop\Mitaly\Openpose\GoPro\Output_json"
-    output_file = os.path.join(output_folder, "104_1_gopro_openpose.csv")
+    folder_path = r"C:\Users\awila\OneDrive\Desktop\Mitaly\Openpose\RealSense\output_data_json\output_json_realsense_111"
+    output_folder = r"C:\Users\awila\OneDrive\Desktop\Mitaly\Openpose\RealSense\output_data_json"
+    output_file = os.path.join(output_folder, "111_1_realsenes_openpose.csv")
 
     all_rows = []
 
